@@ -20,10 +20,10 @@ public class UserService {
     }
 
     public void updateUser(User user) {
-        userDao.findById(user.getId()).ifPresentOrElse(
-                userOptional -> userDao.update(user.getId(), user.getUsername()),
+        userDao.findById(user.id()).ifPresentOrElse(
+                userOptional -> userDao.update(user.id(), user.username()),
                 () -> {
-                    throw new NoSuchElementException("Не найдена запись User c id = " + user.getId());
+                    throw new NoSuchElementException("Не найдена запись User c id = " + user.id());
                 }
         );
     }
