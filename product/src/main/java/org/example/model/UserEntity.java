@@ -1,15 +1,12 @@
-package homework4_7.model;
+package org.example.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -24,6 +21,9 @@ public class UserEntity {
 
     @Column(nullable = false, unique = true, name = "username")
     private String username;
+
+    @OneToMany(mappedBy="userEntity")
+    private Set<ProductEntity> products;
 
     public UserEntity(String username) {
         this.username = username;

@@ -1,6 +1,6 @@
-package homework4_7.repository;
+package org.example.repository;
 
-import homework4_7.model.ProductEntity;
+import org.example.model.ProductEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
