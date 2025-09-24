@@ -1,7 +1,7 @@
-package homework4_7.controller;
+package org.example.controller;
 
-import homework4_7.dto.UserDto;
-import homework4_7.service.UserService;
+import org.example.dto.UserDto;
+import org.example.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

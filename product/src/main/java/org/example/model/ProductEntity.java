@@ -1,4 +1,4 @@
-package homework4_7.model;
+package org.example.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ public class ProductEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", updatable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity userEntity;
 
     @Column(name = "account_number")

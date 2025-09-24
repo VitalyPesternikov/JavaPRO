@@ -1,8 +1,8 @@
-package homework4_7.service;
+package org.example.service;
 
-import homework4_7.dto.UserDto;
-import homework4_7.repository.UserRepository;
-import homework4_7.model.UserEntity;
+import org.example.dto.UserDto;
+import org.example.repository.UserRepository;
+import org.example.model.UserEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

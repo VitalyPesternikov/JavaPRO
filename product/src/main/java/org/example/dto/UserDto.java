@@ -1,4 +1,4 @@
-package homework4_7.dto;
+package org.example.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
