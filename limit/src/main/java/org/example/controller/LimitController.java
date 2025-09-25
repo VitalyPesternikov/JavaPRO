@@ -6,6 +6,8 @@ import org.example.dto.PaymentRequestDto;
 import org.example.service.LimitService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping(path = "limits/v1")
 @RequiredArgsConstructor
@@ -21,4 +23,10 @@ public class LimitController {
     public LimitDto performPaymentRequest(@RequestBody PaymentRequestDto paymentRequest) {
         return limitService.executePaymentRequest(paymentRequest);
     }
+
+    @PostMapping("/payment/revert/{paymentId}")
+    public void revertPaymentRequest(@PathVariable("paymentId") UUID paymentId) {
+        limitService.revertPaymentRequest(paymentId);
+    }
 }
+

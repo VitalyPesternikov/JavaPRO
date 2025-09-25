@@ -2,6 +2,7 @@ package org.example.controller;
 
 import org.example.dto.ErrorResponseDto;
 import org.example.exception.LimitReachedException;
+import org.example.exception.NotFoundException;
 import org.example.exception.PaymentServiceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,7 +20,13 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(LimitReachedException.class)
     @ResponseStatus(HttpStatus.PAYMENT_REQUIRED)
-    public ErrorResponseDto handleIntegrationException(LimitReachedException exception) {
+    public ErrorResponseDto handleLimitReachedException(LimitReachedException exception) {
+        return new ErrorResponseDto(exception.getMessage());
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponseDto handleNotFoundException(NotFoundException exception) {
         return new ErrorResponseDto(exception.getMessage());
     }
 

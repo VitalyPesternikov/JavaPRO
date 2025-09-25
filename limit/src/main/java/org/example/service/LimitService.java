@@ -8,32 +8,35 @@ import org.example.dto.LimitDto;
 import org.example.dto.PaymentRequestDto;
 import org.example.dto.PaymentResponseDto;
 import org.example.exception.LimitReachedException;
+import org.example.exception.NotFoundException;
 import org.example.exception.PaymentServiceException;
+import org.example.mapper.LimitMapper;
 import org.example.model.LimitEntity;
+import org.example.model.TransactionEntity;
 import org.example.repository.LimitRepository;
+import org.example.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class LimitService {
     private final LimitRepository limitRepository;
+    private final TransactionRepository transactionRepository;
     private final PaymentService paymentService;
+    private final LimitMapper limitMapper;
 
     @Value("${limits.standard}")
     private BigDecimal amount;
 
-    public LimitService(LimitRepository limitRepository, PaymentService paymentService) {
-        this.limitRepository = limitRepository;
-        this.paymentService = paymentService;
-    }
-
     @Transactional
     public LimitDto getLimitByUserId(Long userId) {
-        return limitEntityToLimitDto(getLimitByUserIdOrCreate(userId));
+        return limitMapper.limitEntityToLimitDto(getLimitByUserIdOrCreate(userId));
     }
 
     @Transactional
@@ -47,7 +50,12 @@ public class LimitService {
             limitEntity.setLimitAmount(limitEntity.getLimitAmount().subtract(paymentRequestDto.amount()));
             limitRepository.save(limitEntity);
             log.info("Лимит пользователя с id = {} уменьшен на сумму {}", paymentRequestDto.userId(), limitEntity.getLimitAmount());
-            return limitEntityToLimitDto(limitEntity);
+            TransactionEntity transactionEntity = new TransactionEntity();
+            transactionEntity.setPaymentId(paymentResponseDto.paymentId());
+            transactionEntity.setAmount(paymentRequestDto.amount());
+            transactionEntity.setUserId(limitEntity.getUserId());
+            transactionRepository.save(transactionEntity);
+            return limitMapper.limitEntityToLimitDto(limitEntity);
         } else {
             throw new PaymentServiceException(paymentResponseDto.message());
         }
@@ -66,7 +74,23 @@ public class LimitService {
         return newLimit;
     }
 
-    private LimitDto limitEntityToLimitDto(LimitEntity limitEntity) {
-        return new LimitDto(limitEntity.getId(), limitEntity.getUserId(), limitEntity.getLimitAmount());
+    @Transactional
+    public void revertPaymentRequest(UUID paymentId) {
+
+        transactionRepository.findByPaymentId(paymentId)
+                .ifPresentOrElse(transactionEntity -> {
+                            LimitEntity revertingLimit = getLimitByUserIdOrCreate(transactionEntity.getUserId());
+                            revertingLimit.setLimitAmount(
+                                    revertingLimit
+                                            .getLimitAmount()
+                                            .add(transactionEntity.getAmount()));
+                            limitRepository.save(revertingLimit);
+                            transactionRepository.delete(transactionEntity);
+                            log.info("Выполнен возврат средств, платёж с id = {} отменён", paymentId);
+                        },
+                        () -> {
+                            throw new NotFoundException("Не найден платёж с id = " + paymentId);
+                        });
+
     }
 }
