@@ -17,6 +17,7 @@
     <modules>
         <module>payment</module>
         <module>product</module>
+        <module>limit</module>
     </modules>
 
     <dependencies>
